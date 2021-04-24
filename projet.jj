@@ -26,7 +26,7 @@ try {
     { " " | "\t" }
     TOKEN :
     { < NOMBRE: ["1"-"9"] (["0"-"9"])* >
-    | < EOL: "\n" >
+    | < EOL: ";" >
     }
     void mainNT () :
     {}
