@@ -1,31 +1,51 @@
 // fichier Compilateur.jj
 PARSER_BEGIN(Compilateur)
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 public class Compilateur {
     public static void main(String args[]) {
     
-try {
+   try {
+    Compilateur parseur;
+    if(args.length == 0)
+        {
+            System.out.println("Compilateur :  Lecture du fichier systeme . . .");
+            parseur=new Compilateur(System.in);
+            parseur.mainNT();
+            System.out.println("C'est bien une expression arithmetique");
+        }
+    else
+        if(args.length == 1)
+        {
+            System.out.println("Compilateur :Lecture du fichier " +args[0]+" .....");
+            parseur=new Compilateur(new FileInputStream(args[0]), "UTF-8");
+            parseur.mainNT();
+            System.out.println("C'est bien une expression arithmetique");
 
-    Compilateur parseur = new Compilateur(System.in);
-    parseur.mainNT();
-    System.out.println("C'est bien une expression arithmetique");
-
-    } catch (TokenMgrError e) 
-    {
-   
-    System.out.println("Ceci n'est pas une expression arithmetique");
-
-    }
-     catch (ParseException e) {
+        }
+    } 
+        catch (TokenMgrError e) 
+         { 
+             System.out.println("Ceci n'est pas une expression arithmetique");
+         }
+         catch (ParseException e) 
+         {
             System.out.println("Ceci n'est pas une expression arithmetique");
+         }
+        catch(java.io.FileNotFoundException e)
+        {
+           System.out.println("Fichier n'est pas correct !!"); 
         }
     }
-}
+} 
     PARSER_END(Compilateur)
     SKIP :
     { " " | "\t" }
     TOKEN :
-    { < NOMBRE: ["1"-"9"] (["0"-"9"])* >
+    { 
+        < NOMBRE: ["1"-"9"](["0"-"9"])* >
     | < EOL: ";" >
     }
     void mainNT () :
@@ -40,14 +60,16 @@ try {
     }
     void terme () :
     {}
-    { facteur() (
-    "*" facteur()
-    | "/" facteur()
+    { 
+        facteur() (
+        "*" facteur()
+        | "/" facteur()
     )*
     }
     void facteur () :
     {}
-    { "(" expression() ")"
-    | "-" facteur()
-    | <NOMBRE>
+    { 
+        "(" expression() ")"
+        | "-" facteur()
+         | <NOMBRE>
     }
