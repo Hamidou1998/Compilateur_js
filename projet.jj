@@ -45,7 +45,7 @@ public class Compilateur {
     { " " | "\t" }
     TOKEN :
     { 
-        < NOMBRE: ["1"-"9"](["0"-"9"])* >
+        < NOMBRE: (["1"-"9"])+["."](["0"-"9"])* >
     | < EOL: ";" >
     }
     void mainNT () :
