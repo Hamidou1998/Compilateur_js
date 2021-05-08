@@ -125,7 +125,7 @@ public class Compilateur {
             < ~[] >
         }
 
-        /* Section 7.5.1: Reserved Words */
+        /* MOts cleés */
 
         <DEFAULT, IN_REGEX>
         TOKEN :
@@ -163,28 +163,197 @@ public class Compilateur {
             | < THROW: "Lancer" > : DEFAULT
             | < TRY: "Essayer" > : DEFAULT
         }
-        /* JScript .NET Tokens
 
-        TOKEN :
-        {
-            < BYTE: "byte" >
-            | < SBYTE: "sbyte" >
-            | < SHORT: "short" >
-            | < USHORT: "ushort" >
-            | < UINT: "uint" >
-            | < LONG: "long" >
-            | < ULONG: "ulong" >
-            | < FLOAT: "float" >
-            | < NUMBER: "Number" >
-            | < DOUBLE: "double" >
-            | < DECIMAL: "decimal" >
-            | < BOOLEAN: "boolean" >
-            | < STRING: "String" >
-            | < CHAR: "char" >
+            /* Ponctiation */
+
+            <DEFAULT, IN_REGEX>
+            TOKEN :
+            {
+                < LBRACE: "{" > : DEFAULT
+                | < RBRACE: "}" > : IN_REGEX
+                | < LPAREN: "(" > : DEFAULT
+                | < RPAREN: ")" > : IN_REGEX
+                | < LBRACKET: "[" > : DEFAULT
+                | < RBRACKET: "]" > : IN_REGEX
+                | < DOT: "." > : DEFAULT
+                | < SEMICOLON: ";" > : DEFAULT
+                | < COMMA: "," > : DEFAULT
+                | < LT: "<" > : DEFAULT
+                | < GT: ">" > : DEFAULT
+                | < LE: "<=" > : DEFAULT
+                | < GE: ">=" > : DEFAULT
+                | < EQ: "==" > : DEFAULT
+                | < NE: "!=" > : DEFAULT
+                | < SEQ: "===" > : DEFAULT /* Strict Equals Operator */
+                | < SNEQ: "!==" >	 : DEFAULT /* Strict Does-not-equal Operator */
+                | < PLUS: "+" > : DEFAULT
+                | < MINUS: "-" > : DEFAULT
+                | < STAR: "*" > : DEFAULT
+                | < REM: "%" > : DEFAULT
+                | < INCR: "++" > : IN_REGEX
+                |  < DECR: "--" > : IN_REGEX
+                | < LSHIFT: "<<" > : DEFAULT
+                | < RSHIFT: ">>" > : DEFAULT
+                | < RUNSHIFT: ">>>" > : DEFAULT /* Unsigned Right Shift Operator */
+                | < BIT_AND: "&" > : DEFAULT
+                | < BIT_OR: "|" > : DEFAULT
+                | < XOR: "^" > : DEFAULT
+                | < BANG: "!" > : DEFAULT
+                | < TILDE: "~" > : IN_REGEX
+                | < SC_AND: "&&" > : DEFAULT
+                | < SC_OR: "||" > : DEFAULT
+                | < HOOK: "?" > : DEFAULT
+                | < COLON: ":" > : DEFAULT
+                | < ASSIGN: "=" > : DEFAULT
+                | < PLUSASSIGN: "+=" > : DEFAULT
+                | < MINUSASSIGN: "-=" > : DEFAULT
+                |  < STARASSIGN: "*=" > : DEFAULT
+                |  < REMASSIGN: "%=" > : DEFAULT
+                | < LSHIFTASSIGN: "<<=" > : DEFAULT
+                | < RSIGNEDSHIFTASSIGN: ">>=" > : DEFAULT
+                | < RUNSIGNEDSHIFTASSIGN: ">>>=" > : DEFAULT
+                | < ANDASSIGN: "&=" > : DEFAULT
+                | < ORASSIGN: "|=" > : DEFAULT
+                | < XORASSIGN: "^=" > : DEFAULT
+                | < INTANCE_OF: "Instanceof" > : DEFAULT
+            }
+
+            /* NUMERIQUE */
+
+            <DEFAULT, IN_REGEX>
+            TOKEN:
+            { 
+                < DECIMAL_LITERAL :
+                    <DECIMAL_INTEGER_LITERAL> "." (<DECIMAL_DIGITS>)? (<EXPONENT_PART>)?
+                | 
+                    "." <DECIMAL_DIGITS> (<EXPONENT_PART>)?
+                | 
+                    <DECIMAL_INTEGER_LITERAL> (<EXPONENT_PART>)? 
+                >  : IN_REGEX
+            |  
+                < #NON_ZERO_DIGIT: ["1"-"9"] >
+            |
+                < #EXPONENT_PART: ("e" | "E") (["+","-"])? <DECIMAL_DIGITS> >
+            }
+
+            <DEFAULT, IN_REGEX>
+            TOKEN:
+            {
+                < DECIMAL_INTEGER_LITERAL: 
+                    "0" | <NON_ZERO_DIGIT> (<DECIMAL_DIGITS>)?
+                > : IN_REGEX
+            }
+
+            <DEFAULT, IN_REGEX>
+            TOKEN:
+            {
+                < HEX_INTEGER_LITERAL: "0" ["x","X"] (<HEX_DIGIT>)+ > : IN_REGEX
+            }
+
+            <DEFAULT, IN_REGEX>
+            TOKEN:
+            {  < DECIMAL_DIGITS: (<DECIMAL_DIGIT>)+ > : IN_REGEX }
+
+            TOKEN:
+            {
+                < DECIMAL_DIGIT: ["0"-"9"] >
+            }
+            /* NUMERIQUE */
+            /*
+            MORE:
+            { 
+            < LITERAL:
+                <NULL_LITERAL>
+                | <BOOLEAN_LITERAL>
+                | <NUMERIC_LITERAL>
+                | <STRING_LITERAL>
+            >
+            }
+            */
+
+            /* NULL_NUMERIQUE */
+
+            <DEFAULT, IN_REGEX>
+            TOKEN:
+            {
+                < NULL_LITERAL: "null" > : IN_REGEX
+            }
+
+            /* Boolean Numerique */
+
+            <DEFAULT, IN_REGEX>
+            TOKEN:
+            { 
+                <BOOLEAN_LITERAL: "true" | "false" > : IN_REGEX
+            }
+
+            /* CHAINE DE CARACTERE  */
+
+            <DEFAULT, IN_REGEX>
+            TOKEN:
+            {
+                < STRING_LITERAL:
+                    "\"" (<DOUBLE_STRING_CHARACTERS>)? "\""  | "'" (<SINGLE_STRING_CHARACTERS>)? "'"
+                >	 : IN_REGEX
+            |
+                < #DOUBLE_STRING_CHARACTERS: (<DOUBLE_STRING_CHARACTER>)* >
+            |
+                < #SINGLE_STRING_CHARACTERS: (<SINGLE_STRING_CHARACTER>)* >
+            |
+                < #DOUBLE_STRING_CHARACTER:
+                    (~["\"","\\","\n","\r","\u2028","\u2029"])* 
+                    | "\\" <ESCAPE_SEQUENCE>
+                >
+            |
+                < #SINGLE_STRING_CHARACTER:
+                    (~["'","\\","\n","\r","\u2028","\u2029"]) 
+                    | "\\" <ESCAPE_SEQUENCE>
+                > 
+            |
+                < #ESCAPE_SEQUENCE:
+                    <CHARACTER_ESCAPE_SEQUENCE>
+                    | 
+                        "0" 
+                    | 
+                        <HEX_ESCAPE_SEQUENCE>
+                    | 
+                        <UNICODE_ESCAPE_SEQUENCE>
+                >
+            |
+                < #CHARACTER_ESCAPE_SEQUENCE:
+                    <SINGLE_ESCAPE_CHARACTER> | <NON_ESCAPE_CHARACTER>
+                >
+            |
+                < #SINGLE_ESCAPE_CHARACTER: ["'" , "\"" , "\\" , "b" , "f" , "n" , "r" , "t" , "v"] >
+            |
+                < #NON_ESCAPE_CHARACTER: 
+                    ~["\n","\r","\u2028","\u2029"]
+                | 
+                    ~["'" , "\"" , "\\" , "b" , "f" , "n" , "r" , "t" , "v", "x", "u"]
+                | 
+                    ~["0"-"9"]
+                >
+            }
+
+            TOKEN:
+            {
+                < HEX_ESCAPE_SEQUENCE: "x" <HEX_DIGIT> <HEX_DIGIT> >
+            }
+
+            /*
+            TOKEN:
+            {
+            < ESCAPE_CHARACTER:
+                ["'" , "\"" , "\\" , "b" , "f" , "n" , "r" , "t" , "v"]
+                | ["0"-"9"]
+                | "x"
+                | "u"
+            >
+            }
+            
+            
         }
 
-        */
-}
     SKIP :
     { " " | "\t" }
     TOKEN :
