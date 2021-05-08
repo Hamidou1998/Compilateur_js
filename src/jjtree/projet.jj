@@ -41,6 +41,35 @@ public class Compilateur {
     }
 } 
     PARSER_END(Compilateur)
+    
+    /**************** GRAMMAIRE *****************//* 
+
+     TOKEN:
+     {
+        < SOURCE_CHAR: ["\u0000"-"\uFFFE"] >
+    }
+     MORE :
+    {
+      < INPUT_ELEMENT_DIV:
+            <WHITE_SPACE>
+            | <LINE_TERMINATOR>
+            | <COMMENT>
+            | <_TOKEN>
+            | <DIV_PUNCTUATOR>
+        >
+        }
+
+        MORE:
+        {
+        < INPUTELEMENTREGEXP:
+            <WHITE_SPACE>
+            | <LINE_TERMINATOR>
+            | <COMMENT>
+            | <_TOKEN>
+            | <REGULAR_EXPRESSION_LITERAL>
+        >
+        }
+}
     SKIP :
     { " " | "\t" }
     TOKEN :
