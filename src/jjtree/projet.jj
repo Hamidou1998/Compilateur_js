@@ -62,12 +62,69 @@ public class Compilateur {
         MORE:
         {
         < INPUTELEMENTREGEXP:
-            <WHITE_SPACE>
+            <ESPACE>
             | <LINE_TERMINATOR>
             | <COMMENT>
             | <_TOKEN>
             | <REGULAR_EXPRESSION_LITERAL>
         >
+        }
+        */
+
+        /* Space */
+
+        <DEFAULT, IN_REGEX>
+        SPECIAL_TOKEN :
+        {
+            <ESPACE: <TAB> | <VT> | <FF> | <SP> | <NBSP> >
+            |< #TAB: "\u0009" | "\t" > /* Tabulation */
+            |< #VT: "\u000B" > /* Vertical Tab */
+            |< #FF: "\u000C" | "\f"> /* Form Feed */
+            |< #SP: "\u0020" | " " > /* Space */
+            |< #NBSP: "\u00A0" > /* No-Break space */
+            |< #USP: /* Other Unicode space seperator */
+                ["\u2000"] 
+                | ["\u2001"] 
+                | ["\u2002"] 
+                | ["\u2003"] 
+                | ["\u2004"] 
+                | ["\u2005"] 
+                | ["\u2006"] 
+                | ["\u2007"]
+                | ["\u2008"] 
+                | ["\u2009"] 
+                | ["\u200A"] 
+                | ["\u200B"]
+                | ["\u3000"]
+            >
+        }
+
+        /* Commentaire */
+
+        <DEFAULT, IN_REGEX>
+        MORE :
+        {
+            "//" : IN_UNI_LIGNE_COMMENTAIRE
+        |
+            "/*" : IN_MULTI_LIGNE_COMMENTAIRE
+        }
+
+        <IN_UNI_LIGNE_COMMENTAIRE>
+        SPECIAL_TOKEN :
+        {
+            <UNI_LIGNE_COMMENTAIRE: (~["\n","\r"])* ("\n"|"\r"|"\r\n")? > : DEFAULT
+        }
+
+        <IN_MULTI_LIGNE_COMMENTAIRE>
+        SPECIAL_TOKEN :
+        {
+            <MULTI_LIGNE_COMMENTAIRE: "*/" > : DEFAULT
+        }
+
+        <IN_UNI_LIGNE_COMMENTAIRE,IN_MULTI_LIGNE_COMMENTAIRE, IN_PATTERN>
+        MORE :
+        {
+            < ~[] >
         }
 }
     SKIP :
