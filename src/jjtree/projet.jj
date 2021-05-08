@@ -63,8 +63,7 @@ public class Compilateur {
         {
         < INPUTELEMENTREGEXP:
             <ESPACE>
-            | <LINE_TERMINATOR>
-            | <COMMENT>
+            | <COMMENTAIRE>
             | <_TOKEN>
             | <REGULAR_EXPRESSION_LITERAL>
         >
@@ -105,8 +104,7 @@ public class Compilateur {
         MORE :
         {
             "//" : IN_UNI_LIGNE_COMMENTAIRE
-        |
-            "/*" : IN_MULTI_LIGNE_COMMENTAIRE
+            | "/*" : IN_MULTI_LIGNE_COMMENTAIRE
         }
 
         <IN_UNI_LIGNE_COMMENTAIRE>
@@ -126,6 +124,66 @@ public class Compilateur {
         {
             < ~[] >
         }
+
+        /* Section 7.5.1: Reserved Words */
+
+        <DEFAULT, IN_REGEX>
+        TOKEN :
+        {
+            < BREAK: "Break" > : DEFAULT
+            | < CONTINUE: "Continuer" > : DEFAULT
+            | < DELETE: "Supprimer" > : DEFAULT
+            | < ELSE: "Sinon" > : DEFAULT
+            | < FOR: "Pour" > : DEFAULT
+            | < FUNCTION: "Fonction" > : DEFAULT
+            | < IF: "Si" > : DEFAULT
+            | < IN: "Dans" > : DEFAULT
+            | < NEW: "New" > : DEFAULT
+            | < RETURN: "Retourner" > : DEFAULT
+            | < THIS: "this" > : IN_REGEX
+            | < TYPEOF: "Typeof" > : DEFAULT
+            | < VAR: "Var" > : DEFAULT
+            | < VOID: "Vide" > : DEFAULT
+            | < WHILE: "TantQue" > : DEFAULT
+            | < WITH: "Avec" > : DEFAULT
+            | < CASE: "Cas" > : DEFAULT
+            | < CATCH: "Rattraper" > : DEFAULT
+            | < CLASS: "Class" > : DEFAULT
+            | < CONST: "Const" > : DEFAULT
+            | < DEBUGGER: "Debugger" > : DEFAULT
+            | < _DEFAULT: "Defaut" > : DEFAULT
+            | < DO: "Faire" > : DEFAULT
+            | < ENUM: "Enum" > : DEFAULT
+            | < EXPORT: "Exporter" > : DEFAULT
+            | < EXTENDS: "Etend" > : DEFAULT
+            | < FINALLY: "Finalement" > : DEFAULT
+            | < IMPORT: "Importer" > : DEFAULT
+            | < SUPER: "Super" > : DEFAULT
+            | < SWITCH: "Switch" > : DEFAULT
+            | < THROW: "Lancer" > : DEFAULT
+            | < TRY: "Essayer" > : DEFAULT
+        }
+        /* JScript .NET Tokens
+
+        TOKEN :
+        {
+            < BYTE: "byte" >
+            | < SBYTE: "sbyte" >
+            | < SHORT: "short" >
+            | < USHORT: "ushort" >
+            | < UINT: "uint" >
+            | < LONG: "long" >
+            | < ULONG: "ulong" >
+            | < FLOAT: "float" >
+            | < NUMBER: "Number" >
+            | < DOUBLE: "double" >
+            | < DECIMAL: "decimal" >
+            | < BOOLEAN: "boolean" >
+            | < STRING: "String" >
+            | < CHAR: "char" >
+        }
+
+        */
 }
     SKIP :
     { " " | "\t" }
