@@ -1,3 +1,4 @@
+
 import utils.Token;
 
 public class Main {
@@ -88,5 +89,54 @@ public class Main {
         );
         System.out.println(stringBuilder.toString());
     }
-    
+
+    private static void setExpressions(Expression expression) {
+        expression.getExpressions().parallelStream().forEachOrdered(
+                s -> {
+                    try {
+                        int i = Integer.parseInt(s);
+                        stringBuilder.append("CstRe\t").append(i);
+                        printLine();
+                    } catch (NumberFormatException numberFormatException) {
+                        stringBuilder.append("GetVar\t").append(s);
+                        printLine();
+                    }
+                }
+        );
+    }
+
+    private static void setExpressionsTernaire(Expression expression) {
+        String left = expression.getExpressions().get(0);
+        String right = expression.getExpressions().get(1);
+        stringBuilder.append("ConJmp").append("\t").append("2");
+        printLine();
+        try {
+            int i = Integer.parseInt(right);
+            stringBuilder.append("CstRe").append("\t").append(i);
+            printLine();
+        } catch (NumberFormatException numberFormatException) {
+            stringBuilder.append("GetVar").append("\t").append(right);
+            printLine();
+        }
+        stringBuilder.append("Jump").append("\t").append("2");
+        printLine();
+        try {
+            int i = Integer.parseInt(left);
+            stringBuilder.append("CstRe").append("\t").append(i);
+            printLine();
+        } catch (NumberFormatException numberFormatException) {
+            stringBuilder.append("GetVar").append("\t").append(left);
+            printLine();
+        }
+
+    }
+
+    private static void printLine() {
+        stringBuilder.append("\n");
+        line++;
+    }
+
+    public static void overrideCommand(Token token) {
+        newVariableToInitialize(token);
+    }
 }
