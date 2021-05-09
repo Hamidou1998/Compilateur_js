@@ -1,0 +1,388 @@
+// fichier Compilateur.jj
+PARSER_BEGIN(Compilateur)
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+public class Compilateur {
+    public static void main(String args[]) {
+    
+   try {
+    Compilateur parseur;
+    if(args.length == 0)
+        {
+            System.out.println("Compilateur :  Lecture du fichier systeme . . .");
+            parseur=new Compilateur(System.in);
+            parseur.mainNT();
+            System.out.println("C'est bien une expression arithmetique");
+        }
+    else
+        if(args.length == 1)
+        {
+            System.out.println("Compilateur :Lecture du fichier " +args[0]+" .....");
+            parseur=new Compilateur(new FileInputStream(args[0]), "UTF-8");
+            parseur.mainNT();
+            System.out.println("C'est bien une expression arithmetique");
+
+        }
+    } 
+        catch (TokenMgrError e) 
+         { 
+             System.out.println("Ceci n'est pas une expression arithmetique");
+         }
+         catch (ParseException e) 
+         {
+            System.out.println("Ceci n'est pas une expression arithmetique");
+         }
+        catch(java.io.FileNotFoundException e)
+        {
+           System.out.println("Fichier n'est pas correct !!"); 
+        }
+    }
+} 
+    PARSER_END(Compilateur)
+    
+    /**************** GRAMMAIRE *****************//* 
+
+     TOKEN:
+     {
+        < SOURCE_CHAR: ["\u0000"-"\uFFFE"] >
+    }
+     MORE :
+    {
+      < INPUT_ELEMENT_DIV:
+            <WHITE_SPACE>
+            | <LINE_TERMINATOR>
+            | <COMMENT>
+            | <_TOKEN>
+            | <DIV_PUNCTUATOR>
+        >
+        }
+
+        MORE:
+        {
+        < INPUTELEMENTREGEXP:
+            <ESPACE>
+            | <COMMENTAIRE>
+            | <_TOKEN>
+            | <REGULAR_EXPRESSION_LITERAL>
+        >
+        }
+        */
+
+        /* Space */
+
+        <DEFAULT, IN_REGEX>
+        SPECIAL_TOKEN :
+        {
+            <ESPACE: <TAB> | <VT> | <FF> | <SP> | <NBSP> >
+            |< #TAB: "\u0009" | "\t" > /* Tabulation */
+            |< #VT: "\u000B" > /* Vertical Tab */
+            |< #FF: "\u000C" | "\f"> /* Form Feed */
+            |< #SP: "\u0020" | " " > /* Space */
+            |< #NBSP: "\u00A0" > /* No-Break space */
+            |< #USP: /* Other Unicode space seperator */
+                ["\u2000"] 
+                | ["\u2001"] 
+                | ["\u2002"] 
+                | ["\u2003"] 
+                | ["\u2004"] 
+                | ["\u2005"] 
+                | ["\u2006"] 
+                | ["\u2007"]
+                | ["\u2008"] 
+                | ["\u2009"] 
+                | ["\u200A"] 
+                | ["\u200B"]
+                | ["\u3000"]
+            >
+        }
+
+        /* Commentaire */
+
+        <DEFAULT, IN_REGEX>
+        MORE :
+        {
+            "//" : IN_UNI_LIGNE_COMMENTAIRE
+            | "/*" : IN_MULTI_LIGNE_COMMENTAIRE
+        }
+
+        <IN_UNI_LIGNE_COMMENTAIRE>
+        SPECIAL_TOKEN :
+        {
+            <UNI_LIGNE_COMMENTAIRE: (~["\n","\r"])* ("\n"|"\r"|"\r\n")? > : DEFAULT
+        }
+
+        <IN_MULTI_LIGNE_COMMENTAIRE>
+        SPECIAL_TOKEN :
+        {
+            <MULTI_LIGNE_COMMENTAIRE: "*/" > : DEFAULT
+        }
+
+        <IN_UNI_LIGNE_COMMENTAIRE,IN_MULTI_LIGNE_COMMENTAIRE, IN_PATTERN>
+        MORE :
+        {
+            < ~[] >
+        }
+
+        /* MOts cleés */
+
+        <DEFAULT, IN_REGEX>
+        TOKEN :
+        {
+            < BREAK: "Break" > : DEFAULT
+            | < CONTINUE: "Continuer" > : DEFAULT
+            | < DELETE: "Supprimer" > : DEFAULT
+            | < ELSE: "Sinon" > : DEFAULT
+            | < FOR: "Pour" > : DEFAULT
+            | < FUNCTION: "Fonction" > : DEFAULT
+            | < IF: "Si" > : DEFAULT
+            | < IN: "Dans" > : DEFAULT
+            | < NEW: "New" > : DEFAULT
+            | < RETURN: "Retourner" > : DEFAULT
+            | < THIS: "this" > : IN_REGEX
+            | < TYPEOF: "Typeof" > : DEFAULT
+            | < VAR: "Var" > : DEFAULT
+            | < VOID: "Vide" > : DEFAULT
+            | < WHILE: "TantQue" > : DEFAULT
+            | < WITH: "Avec" > : DEFAULT
+            | < CASE: "Cas" > : DEFAULT
+            | < CATCH: "Rattraper" > : DEFAULT
+            | < CLASS: "Class" > : DEFAULT
+            | < CONST: "Const" > : DEFAULT
+            | < DEBUGGER: "Debugger" > : DEFAULT
+            | < _DEFAULT: "Defaut" > : DEFAULT
+            | < DO: "Faire" > : DEFAULT
+            | < ENUM: "Enum" > : DEFAULT
+            | < EXPORT: "Exporter" > : DEFAULT
+            | < EXTENDS: "Etend" > : DEFAULT
+            | < FINALLY: "Finalement" > : DEFAULT
+            | < IMPORT: "Importer" > : DEFAULT
+            | < SUPER: "Super" > : DEFAULT
+            | < SWITCH: "Switch" > : DEFAULT
+            | < THROW: "Lancer" > : DEFAULT
+            | < TRY: "Essayer" > : DEFAULT
+        }
+
+            /* Ponctiation */
+
+            <DEFAULT, IN_REGEX>
+            TOKEN :
+            {
+                < LBRACE: "{" > : DEFAULT
+                | < RBRACE: "}" > : IN_REGEX
+                | < LPAREN: "(" > : DEFAULT
+                | < RPAREN: ")" > : IN_REGEX
+                | < LBRACKET: "[" > : DEFAULT
+                | < RBRACKET: "]" > : IN_REGEX
+                | < DOT: "." > : DEFAULT
+                | < SEMICOLON: ";" > : DEFAULT
+                | < COMMA: "," > : DEFAULT
+                | < LT: "<" > : DEFAULT
+                | < GT: ">" > : DEFAULT
+                | < LE: "<=" > : DEFAULT
+                | < GE: ">=" > : DEFAULT
+                | < EQ: "==" > : DEFAULT
+                | < NE: "!=" > : DEFAULT
+                | < SEQ: "===" > : DEFAULT /* Strict Equals Operator */
+                | < SNEQ: "!==" >	 : DEFAULT /* Strict Does-not-equal Operator */
+                | < PLUS: "+" > : DEFAULT
+                | < MINUS: "-" > : DEFAULT
+                | < STAR: "*" > : DEFAULT
+                | < REM: "%" > : DEFAULT
+                | < INCR: "++" > : IN_REGEX
+                |  < DECR: "--" > : IN_REGEX
+                | < LSHIFT: "<<" > : DEFAULT
+                | < RSHIFT: ">>" > : DEFAULT
+                | < RUNSHIFT: ">>>" > : DEFAULT /* Unsigned Right Shift Operator */
+                | < BIT_AND: "&" > : DEFAULT
+                | < BIT_OR: "|" > : DEFAULT
+                | < XOR: "^" > : DEFAULT
+                | < BANG: "!" > : DEFAULT
+                | < TILDE: "~" > : IN_REGEX
+                | < SC_AND: "&&" > : DEFAULT
+                | < SC_OR: "||" > : DEFAULT
+                | < HOOK: "?" > : DEFAULT
+                | < COLON: ":" > : DEFAULT
+                | < ASSIGN: "=" > : DEFAULT
+                | < PLUSASSIGN: "+=" > : DEFAULT
+                | < MINUSASSIGN: "-=" > : DEFAULT
+                |  < STARASSIGN: "*=" > : DEFAULT
+                |  < REMASSIGN: "%=" > : DEFAULT
+                | < LSHIFTASSIGN: "<<=" > : DEFAULT
+                | < RSIGNEDSHIFTASSIGN: ">>=" > : DEFAULT
+                | < RUNSIGNEDSHIFTASSIGN: ">>>=" > : DEFAULT
+                | < ANDASSIGN: "&=" > : DEFAULT
+                | < ORASSIGN: "|=" > : DEFAULT
+                | < XORASSIGN: "^=" > : DEFAULT
+                | < INTANCE_OF: "Instanceof" > : DEFAULT
+            }
+
+            /* NUMERIQUE */
+
+            <DEFAULT, IN_REGEX>
+            TOKEN:
+            { 
+                < DECIMAL_LITERAL :
+                    <DECIMAL_INTEGER_LITERAL> "." (<DECIMAL_DIGITS>)? (<EXPONENT_PART>)?
+                | 
+                    "." <DECIMAL_DIGITS> (<EXPONENT_PART>)?
+                | 
+                    <DECIMAL_INTEGER_LITERAL> (<EXPONENT_PART>)? 
+                >  : IN_REGEX
+            |  
+                < #NON_ZERO_DIGIT: ["1"-"9"] >
+            |
+                < #EXPONENT_PART: ("e" | "E") (["+","-"])? <DECIMAL_DIGITS> >
+            }
+
+            <DEFAULT, IN_REGEX>
+            TOKEN:
+            {
+                < DECIMAL_INTEGER_LITERAL: 
+                    "0" | <NON_ZERO_DIGIT> (<DECIMAL_DIGITS>)?
+                > : IN_REGEX
+            }
+
+            <DEFAULT, IN_REGEX>
+            TOKEN:
+            {
+                < HEX_INTEGER_LITERAL: "0" ["x","X"] (<HEX_DIGIT>)+ > : IN_REGEX
+            }
+
+            <DEFAULT, IN_REGEX>
+            TOKEN:
+            {  < DECIMAL_DIGITS: (<DECIMAL_DIGIT>)+ > : IN_REGEX }
+
+            TOKEN:
+            {
+                < DECIMAL_DIGIT: ["0"-"9"] >
+            }
+            /* NUMERIQUE */
+            /*
+            MORE:
+            { 
+            < LITERAL:
+                <NULL_LITERAL>
+                | <BOOLEAN_LITERAL>
+                | <NUMERIC_LITERAL>
+                | <STRING_LITERAL>
+            >
+            }
+            */
+
+            /* NULL_NUMERIQUE */
+
+            <DEFAULT, IN_REGEX>
+            TOKEN:
+            {
+                < NULL_LITERAL: "null" > : IN_REGEX
+            }
+
+            /* Boolean Numerique */
+
+            <DEFAULT, IN_REGEX>
+            TOKEN:
+            { 
+                <BOOLEAN_LITERAL: "true" | "false" > : IN_REGEX
+            }
+
+            /* CHAINE DE CARACTERE  */
+
+            <DEFAULT, IN_REGEX>
+            TOKEN:
+            {
+                < STRING_LITERAL:
+                    "\"" (<DOUBLE_STRING_CHARACTERS>)? "\""  | "'" (<SINGLE_STRING_CHARACTERS>)? "'"
+                >	 : IN_REGEX
+            |
+                < #DOUBLE_STRING_CHARACTERS: (<DOUBLE_STRING_CHARACTER>)* >
+            |
+                < #SINGLE_STRING_CHARACTERS: (<SINGLE_STRING_CHARACTER>)* >
+            |
+                < #DOUBLE_STRING_CHARACTER:
+                    (~["\"","\\","\n","\r","\u2028","\u2029"])* 
+                    | "\\" <ESCAPE_SEQUENCE>
+                >
+            |
+                < #SINGLE_STRING_CHARACTER:
+                    (~["'","\\","\n","\r","\u2028","\u2029"]) 
+                    | "\\" <ESCAPE_SEQUENCE>
+                > 
+            |
+                < #ESCAPE_SEQUENCE:
+                    <CHARACTER_ESCAPE_SEQUENCE>
+                    | 
+                        "0" 
+                    | 
+                        <HEX_ESCAPE_SEQUENCE>
+                    | 
+                        <UNICODE_ESCAPE_SEQUENCE>
+                >
+            |
+                < #CHARACTER_ESCAPE_SEQUENCE:
+                    <SINGLE_ESCAPE_CHARACTER> | <NON_ESCAPE_CHARACTER>
+                >
+            |
+                < #SINGLE_ESCAPE_CHARACTER: ["'" , "\"" , "\\" , "b" , "f" , "n" , "r" , "t" , "v"] >
+            |
+                < #NON_ESCAPE_CHARACTER: 
+                    ~["\n","\r","\u2028","\u2029"]
+                | 
+                    ~["'" , "\"" , "\\" , "b" , "f" , "n" , "r" , "t" , "v", "x", "u"]
+                | 
+                    ~["0"-"9"]
+                >
+            }
+
+            TOKEN:
+            {
+                < HEX_ESCAPE_SEQUENCE: "x" <HEX_DIGIT> <HEX_DIGIT> >
+            }
+
+            /*
+            TOKEN:
+            {
+            < ESCAPE_CHARACTER:
+                ["'" , "\"" , "\\" , "b" , "f" , "n" , "r" , "t" , "v"]
+                | ["0"-"9"]
+                | "x"
+                | "u"
+            >
+            }
+            
+            
+        }
+
+    SKIP :
+    { " " | "\t" }
+    TOKEN :
+    { 
+        < NOMBRE: (["1"-"9"])+["."](["0"-"9"])* >
+    | < EOL: ";" >
+    }
+    void mainNT () :
+    {}
+    { expression() <EOL> }
+    void expression () :
+    {}
+    { terme() (
+    "+" terme()
+    | "-" terme()
+    )*
+    }
+    void terme () :
+    {}
+    { 
+        facteur() (
+        "*" facteur()
+        | "/" facteur()
+    )*
+    }
+    void facteur () :
+    {}
+    { 
+        "(" expression() ")"
+        | "-" facteur()
+         | <NOMBRE>
+    }
