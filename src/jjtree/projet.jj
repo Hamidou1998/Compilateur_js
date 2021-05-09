@@ -353,36 +353,4 @@ public class Compilateur {
             
             
         }
-
-    SKIP :
-    { " " | "\t" }
-    TOKEN :
-    { 
-        < NOMBRE: (["1"-"9"])+["."](["0"-"9"])* >
-    | < EOL: ";" >
-    }
-    void mainNT () :
-    {}
-    { expression() <EOL> }
-    void expression () :
-    {}
-    { terme() (
-    "+" terme()
-    | "-" terme()
-    )*
-    }
-    void terme () :
-    {}
-    { 
-        facteur() (
-        "*" facteur()
-        | "/" facteur()
-    )*
-    }
-    void facteur () :
-    {}
-    { 
-        "(" expression() ")"
-        | "-" facteur()
-         | <NOMBRE>
-    }
+    
