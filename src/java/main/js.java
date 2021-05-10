@@ -1,4 +1,3 @@
-import node.Main;
 import node.Operation;
 import utils.*;
 
@@ -56,16 +55,10 @@ public class JavaScript/*@bgen(jjtree)*/ implements JavaScriptTreeConstants, Jav
     private int jj_kind = -1;
     private int jj_endpos;
 
-    /**
-     * Constructor with InputStream.
-     */
     public JavaScript(InputStream stream) {
         this(stream, null);
     }
 
-    /**
-     * Constructor with InputStream and supplied encoding
-     */
     public JavaScript(InputStream stream, String encoding) {
         try {
             jj_input_stream = new JavaCharStream(stream, encoding, 1, 1);
@@ -80,9 +73,6 @@ public class JavaScript/*@bgen(jjtree)*/ implements JavaScriptTreeConstants, Jav
         for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
     }
 
-    /**
-     * Constructor.
-     */
     public JavaScript(Reader stream) {
         jj_input_stream = new JavaCharStream(stream, 1, 1);
         token_source = new JavaScriptTokenManager(jj_input_stream);
@@ -93,9 +83,6 @@ public class JavaScript/*@bgen(jjtree)*/ implements JavaScriptTreeConstants, Jav
         for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
     }
 
-    /**
-     * Constructor with generated utils.Token Manager.
-     */
     public JavaScript(JavaScriptTokenManager tm) {
         token_source = tm;
         token = new Token();
@@ -118,19 +105,19 @@ public class JavaScript/*@bgen(jjtree)*/ implements JavaScriptTreeConstants, Jav
                 return;
             }
         } else {
-            System.out.println("main.JavaScript Parser:  Usage is one of:");
-            System.out.println("         main.JavaScript < inputfile");
-            System.out.println("OR");
-            System.out.println("         main.JavaScript inputfile");
+            System.out.println("Compilateur :  Usage is one of:");
+            System.out.println("         Compilateur  < inputfile");
+            System.out.println("ou");
+            System.out.println("         Compilateur fichier entrer ");
             return;
         }
         try {
             SimpleNode n = parser.Program();
-            System.out.println("Compilateur : Le programme est executer avec succees !.");
+            System.out.println("Compilateur : Le programme est executer avec succees ...!");
             Main.codeMachine();
         } catch (ParseException e) {
             System.out.println(e.getMessage());
-            System.out.println("main.JavaScript parser:  Encountered errors during parse.");
+            System.out.println("Compilateur:Erreurs rencontrées lors de l'analyse.....");
         }
     }
 
@@ -154,19 +141,6 @@ public class JavaScript/*@bgen(jjtree)*/ implements JavaScriptTreeConstants, Jav
         jj_la1_4 = new int[]{0x8, 0x0, 0x8, 0x8, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x8, 0x8, 0x8, 0x0, 0x0, 0x8, 0x0, 0x8, 0x8, 0x0, 0x0, 0x0, 0x8, 0x0, 0x4, 0x4, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x8, 0x8, 0x2, 0x0, 0x0, 0x0, 0x0, 0x0, 0x8, 0x8, 0x0, 0x0, 0x0, 0x0, 0x0, 0x8, 0x8, 0x8, 0x8, 0x8, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x8, 0x8, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x8, 0x8, 0x8, 0x8, 0x0, 0x0, 0x0,};
     }
 
-    void jjtreeOpenNodeScope(Node n) {
-        Token t = getToken(1);
-        if (t != null) {
-            //((utils.SimpleNode) n).setBeginToken(t);
-        }
-    }
-
-    void jjtreeCloseNodeScope(Node n) {
-        Token t = getToken(0);
-        if (t != null) {
-            //((utils.SimpleNode) n).setEndToken(t);
-        }
-    }
 
     private void showOpenBracket(String token) {
         StringBuilder stringBuilder = new StringBuilder();
@@ -196,11 +170,10 @@ public class JavaScript/*@bgen(jjtree)*/ implements JavaScriptTreeConstants, Jav
         stringBuilder.append("</").append(token).append(">");
         System.out.println(stringBuilder.toString());
     }
-    /*****************************************
-     * ECMA SYNTACTIC GRAMMARS  STARTS HERE  *
-     *****************************************/
+    
+   /**************** GRAMMAIRE *****************//*
 
-    /* Section 11.1: Primary Expressions */
+    /* Expression primaire  */
     final public void PrimaryExpression() throws ParseException {
         showOpenBracket("PrimaryExpression");
         if (jj_2_1(2147483647)) {
