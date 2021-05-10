@@ -31,17 +31,11 @@ public class JavaScript/*@bgen(jjtree)*/ implements JavaScriptTreeConstants, Jav
     final private LookaheadSuccess jj_ls = new LookaheadSuccess();
     private final List<int[]> jj_expentries = new ArrayList<int[]>();
     private final int[] jj_lasttokens = new int[100];
-    /**
-     * Generated utils.Token Manager.
-     */
+   
     public JavaScriptTokenManager token_source;
-    /**
-     * Current token.
-     */
+  
     public Token token;
-    /**
-     * Next token.
-     */
+   
     public Token jj_nt;
     protected JJTJavaScriptState jjtree = new JJTJavaScriptState();
     JavaCharStream jj_input_stream;
@@ -240,6 +234,98 @@ public class JavaScript/*@bgen(jjtree)*/ implements JavaScriptTreeConstants, Jav
         showCloseBracket("PrimaryExpression");
     }
     
+     /* Expression Literals */
+    final public void Literal() throws ParseException {
+        showOpenBracket("Literal");
+        /*@bgen(jjtree) Literal */
+        ASTLiteral jjtn000 = new ASTLiteral(JJTLITERAL);
+        boolean jjtc000 = true;
+        jjtree.openNodeScope(jjtn000);
+        jjtreeOpenNodeScope(jjtn000);
+        Token t;
+        Map objLiteral;
+        List arrayLiteral;
+        try {
+            switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
+                case DECIMAL_LITERAL:
+                    t = jj_consume_token(DECIMAL_LITERAL);
+                    jjtree.closeNodeScope(jjtn000, true);
+                    jjtc000 = false;
+                    jjtreeCloseNodeScope(jjtn000);
+                    jjtn000.jjtSetValue(t.image);
+                    break;
+                case HEX_INTEGER_LITERAL:
+                    t = jj_consume_token(HEX_INTEGER_LITERAL);
+                    jjtree.closeNodeScope(jjtn000, true);
+                    jjtc000 = false;
+                    jjtreeCloseNodeScope(jjtn000);
+                    jjtn000.jjtSetValue(t.image);
+                    break;
+                case STRING_LITERAL:
+                    t = jj_consume_token(STRING_LITERAL);
+                    jjtree.closeNodeScope(jjtn000, true);
+                    jjtc000 = false;
+                    jjtreeCloseNodeScope(jjtn000);
+                    jjtn000.jjtSetValue(t.image);
+                    break;
+                case BOOLEAN_LITERAL:
+                    t = jj_consume_token(BOOLEAN_LITERAL);
+                    jjtree.closeNodeScope(jjtn000, true);
+                    jjtc000 = false;
+                    jjtreeCloseNodeScope(jjtn000);
+                    jjtn000.jjtSetValue(t.image);
+                    break;
+                case NULL_LITERAL:
+                    t = jj_consume_token(NULL_LITERAL);
+                    jjtree.closeNodeScope(jjtn000, true);
+                    jjtc000 = false;
+                    jjtreeCloseNodeScope(jjtn000);
+                    jjtn000.jjtSetValue(null);
+                    break;
+                case REGULAR_EXPRESSION_LITERAL:
+                    t = jj_consume_token(REGULAR_EXPRESSION_LITERAL);
+                    jjtree.closeNodeScope(jjtn000, true);
+                    jjtc000 = false;
+                    jjtreeCloseNodeScope(jjtn000);
+                    jjtn000.jjtSetValue(t.image);
+                    break;
+                default:
+                    jj_la1[0] = jj_gen;
+                    jj_consume_token(-1);
+                    throw new ParseException();
+            }
+        } finally {
+            if (jjtc000) {
+                jjtree.closeNodeScope(jjtn000, true);
+                jjtreeCloseNodeScope(jjtn000);
+            }
+        }
+        showCloseBracket("Literal");
+    }
+
+    final public void Identifier() throws ParseException {
+        showOpenBracket("Identifier");
+        /*@bgen(jjtree) Identifier */
+        ASTIdentifier jjtn000 = new ASTIdentifier(JJTIDENTIFIER);
+        boolean jjtc000 = true;
+        jjtree.openNodeScope(jjtn000);
+        jjtreeOpenNodeScope(jjtn000);
+        Token t;
+        try {
+            t = jj_consume_token(IDENTIFIER_NAME);
+            jjtree.closeNodeScope(jjtn000, true);
+            jjtc000 = false;
+            jjtreeCloseNodeScope(jjtn000);
+            jjtn000.jjtSetValue(t.image);
+        } finally {
+            if (jjtc000) {
+                jjtree.closeNodeScope(jjtn000, true);
+                jjtreeCloseNodeScope(jjtn000);
+            }
+            showCloseBracket("Identifier");
+        }
+
+    }
 
    
 }
