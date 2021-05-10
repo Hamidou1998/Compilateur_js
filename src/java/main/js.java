@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 
-public class JavaScript/*@bgen(jjtree)*/ implements JavaScriptTreeConstants, JavaScriptConstants {/*@bgen(jjtree)*/
+public class JavaScript implements JavaScriptTreeConstants, JavaScriptConstants {s
 
 
     static private int[] jj_la1_0;
