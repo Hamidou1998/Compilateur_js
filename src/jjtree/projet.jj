@@ -1,47 +1,58 @@
-// fichier Compilateur.jj
-PARSER_BEGIN(Compilateur)
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-public class Compilateur {
-    public static void main(String args[]) {
-    
-   try {
-    Compilateur parseur;
-    if(args.length == 0)
-        {
-            System.out.println("Compilateur :  Lecture du fichier systeme . . .");
-            parseur=new Compilateur(System.in);
-            parseur.mainNT();
-            System.out.println("C'est bien une expression arithmetique");
-        }
-    else
-        if(args.length == 1)
-        {
-            System.out.println("Compilateur :Lecture du fichier " +args[0]+" .....");
-            parseur=new Compilateur(new FileInputStream(args[0]), "UTF-8");
-            parseur.mainNT();
-            System.out.println("C'est bien une expression arithmetique");
 
+PARSER_BEGIN(Compilateur)
+
+package org.dojo.jsl.parser;
+
+import java.io.*;
+import java.util.*;
+
+public class Compilateur {
+
+	public static void main(String args[]){
+		Compilateur parser;
+		if(args.length == 0){
+			System.out.println("main.JavaScript Parser:  Reading from standard input . . .");
+			parser = new Compilateur(System.in);
+		} else if(args.length == 1){
+			System.out.println("main.JavaScript Parser:  Reading from file " + args[0] + " . . .");
+			try {
+				parser = new Compilateur(new FileInputStream(args[0]), "UTF-8");
+			} catch(java.io.FileNotFoundException e){
+				System.out.println("main.JavaScript Parser:  File " + args[0] + " not found.");
+				return;
+			}
+		} else {
+			System.out.println("main.JavaScript Parser:  Usage is one of:");
+			System.out.println("         main.JavaScript < inputfile");
+			System.out.println("OR");
+			System.out.println("         main.JavaScript inputfile");
+			return;
+		}
+		try {
+			SimpleNode n = parser.Program();
+			System.out.println("main.JavaScript parser:  main.JavaScript program parsed successfully.");
+		} catch (ParseException e) {
+			System.out.println(e.getMessage());
+			System.out.println("main.JavaScript parser:  Encountered errors during parse.");
+		}
+	}
+
+	void jjtreeOpenNodeScope(Node n){
+		Token t = getToken(1);
+		if(t != null){
+			((SimpleNode) n).setBeginToken(t);
+		}
         }
-    } 
-        catch (TokenMgrError e) 
-         { 
-             System.out.println("Ceci n'est pas une expression arithmetique");
-         }
-         catch (ParseException e) 
-         {
-            System.out.println("Ceci n'est pas une expression arithmetique");
-         }
-        catch(java.io.FileNotFoundException e)
-        {
-           System.out.println("Fichier n'est pas correct !!"); 
+
+        void jjtreeCloseNodeScope(Node n){
+            Token t = getToken(0);
+            if(t != null){
+                ((SimpleNode) n).setEndToken(t);
+            }
         }
-    }
-} 
-    PARSER_END(Compilateur)
-    
+        }
+        PARSER_END(Compilateur)
+            
     /**************** GRAMMAIRE *****************//* 
 
      TOKEN:
@@ -243,14 +254,6 @@ public class Compilateur {
                     "0" | <NON_ZERO_DIGIT> (<DECIMAL_DIGITS>)?
                 > : IN_REGEX
             }
-
-            <DEFAULT, IN_REGEX>
-            TOKEN:
-            {
-                < HEX_INTEGER_LITERAL: "0" ["x","X"] (<HEX_DIGIT>)+ > : IN_REGEX
-            }
-
-            <DEFAULT, IN_REGEX>
             TOKEN:
             {  < DECIMAL_DIGITS: (<DECIMAL_DIGIT>)+ > : IN_REGEX }
 
@@ -286,3 +289,66 @@ public class Compilateur {
             { 
                 <BOOLEAN_LITERAL: "true" | "false" > : IN_REGEX
             }
+            /* Chaine de caractere */
+            <DEFAULT, IN_REGEX>
+                TOKEN:
+                {
+                    < STRING_LITERAL:
+                        "\"" (<DOUBLE_STRING_CHARACTERS>)? "\""  | "'" (<SINGLE_STRING_CHARACTERS>)? "'"
+                    >	 : IN_REGEX
+                |
+                    < #DOUBLE_STRING_CHARACTERS: (<DOUBLE_STRING_CHARACTER>)* >
+                |
+                    < #SINGLE_STRING_CHARACTERS: (<SINGLE_STRING_CHARACTER>)* >
+                |
+                    < #DOUBLE_STRING_CHARACTER:
+                        (~["\"","\\","\n","\r","\u2028","\u2029"])* 
+                        | "\\" <ESCAPE_SEQUENCE>
+                    >
+                |
+                    < #SINGLE_STRING_CHARACTER:
+                        (~["'","\\","\n","\r","\u2028","\u2029"]) 
+                        | "\\" <ESCAPE_SEQUENCE>
+                    > 
+                |
+                    < #ESCAPE_SEQUENCE:
+                        <CHARACTER_ESCAPE_SEQUENCE>
+                        | 
+                            "0" 
+                        | 
+                            <HEX_ESCAPE_SEQUENCE>
+                        | 
+                            <UNICODE_ESCAPE_SEQUENCE>
+                    >
+                |
+                    < #CHARACTER_ESCAPE_SEQUENCE:
+                        <SINGLE_ESCAPE_CHARACTER> | <NON_ESCAPE_CHARACTER>
+                    >
+                |
+                    < #SINGLE_ESCAPE_CHARACTER: ["'" , "\"" , "\\" , "b" , "f" , "n" , "r" , "t" , "v"] >
+                |
+                    < #NON_ESCAPE_CHARACTER: 
+                        ~["\n","\r","\u2028","\u2029"]
+                    | 
+                        ~["'" , "\"" , "\\" , "b" , "f" , "n" , "r" , "t" , "v", "x", "u"]
+                    | 
+                        ~["0"-"9"]
+                    >
+                }
+
+                TOKEN:
+                {
+                    < HEX_ESCAPE_SEQUENCE: "x" <HEX_DIGIT> <HEX_DIGIT> >
+                }
+
+                /*
+                TOKEN:
+                {
+                < ESCAPE_CHARACTER:
+                    ["'" , "\"" , "\\" , "b" , "f" , "n" , "r" , "t" , "v"]
+                    | ["0"-"9"]
+                    | "x"
+                    | "u"
+                >
+                }
+                */
